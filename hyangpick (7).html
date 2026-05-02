@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>향픽 — 나만의 향수 발견</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--cream:#faf8f5;--dark:#1a1714;--muted:#6b6560;--accent:#8b6f5e;--accent-light:#f0e8e0;--border:#e8e2da;--white:#fff}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--dark);line-height:1.7;font-size:15px}
+a{text-decoration:none;color:inherit}
+nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:20px;font-weight:600;letter-spacing:-0.5px}.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;font-size:13px;color:var(--muted)}.nav-links a:hover{color:var(--dark)}
+.nav-cta{background:var(--dark);color:var(--white);padding:8px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:none}.nav-cta:hover{background:var(--accent)}
+.hero{padding:90px 5% 60px;max-width:1100px;margin:0 auto;text-align:center}
+.hero-badge{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:11px;padding:5px 14px;border-radius:20px;margin-bottom:20px;letter-spacing:0.5px}
+.hero h1{font-size:48px;font-weight:600;line-height:1.2;letter-spacing:-1px;margin-bottom:16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:16px;color:var(--muted);margin-bottom:40px;max-width:520px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.btn-primary{background:var(--dark);color:var(--white);padding:13px 28px;border-radius:24px;font-size:14px;cursor:pointer;border:none}.btn-primary:hover{background:var(--accent)}
+.btn-secondary{background:transparent;color:var(--dark);padding:13px 28px;border-radius:24px;font-size:14px;cursor:pointer;border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--accent)}
+section{padding:70px 5%;max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.section-header{margin-bottom:32px}
+.section-header h2{font-size:28px;font-weight:600;letter-spacing:-0.5px}
+.section-header p{color:var(--muted);margin-top:6px;font-size:14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;align-items:center}
+.search-input{padding:9px 16px;border-radius:24px;border:0.5px solid var(--border);background:var(--white);font-size:13px;font-family:inherit;outline:none;width:220px}.search-input:focus{border-color:var(--accent)}
+.filters{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.filter-btn{padding:7px 15px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--border);background:var(--white);color:var(--muted);transition:all 0.15s}.filter-btn.active,.filter-btn:hover{background:var(--dark);color:var(--white);border-color:var(--dark)}
+.count-label{font-size:12px;color:var(--muted);margin-left:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.pcard{background:var(--white);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.15s}.pcard:hover{transform:translateY(-3px);border-color:var(--accent)}
+.pcard-img-wrap{position:relative;height:180px;background:var(--accent-light);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pcard-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}.pcard:hover .pcard-img-wrap img{transform:scale(1.05)}
+.pcard-tag{position:absolute;top:10px;left:10px;font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(250,248,245,0.93);color:var(--accent);border:0.5px solid var(--border)}
+.pcard-body{padding:13px 15px}
+.pcard h3{font-size:13px;font-weight:500;margin-bottom:2px;line-height:1.4}
+.brand{font-size:11px;color:var(--muted);margin-bottom:8px}
+.notes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.note{font-size:10px;background:var(--cream);padding:3px 8px;border-radius:8px;color:var(--muted)}
+.pcard-footer{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--muted)}
+.vibe-tag{font-size:10px;color:var(--accent);margin-top:4px;font-style:italic}
+.skel{background:var(--white);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.skel-img{height:180px;background:var(--accent-light)}
+.skel-body{padding:13px 15px}
+.skel-line{height:11px;background:var(--cream);border-radius:6px;margin-bottom:8px}
+.skel-line.s{width:55%}.skel-line.m{width:75%}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:24px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto}
+.modal-img-wrap{width:100%;height:220px;background:var(--accent-light);border-radius:24px 24px 0 0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.modal-img{width:100%;height:100%;object-fit:cover;display:block}
+.modal-content{padding:26px 30px 30px}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.modal-close{background:var(--cream);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;flex-shrink:0}
+.modal h2{font-size:19px;font-weight:600;margin-bottom:2px}
+.modal .brand{font-size:12px;color:var(--muted)}
+.vibe-full{font-size:13px;color:var(--accent);margin:10px 0;font-style:italic}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.notes-card{border-radius:12px;padding:10px 12px;border:0.5px solid var(--border)}
+.notes-card--top{background:#fef9ec;border-color:#f0e6c0}
+.notes-card--mid{background:#f0f7ee;border-color:#c8e6c0}
+.notes-card--base{background:#f0eefc;border-color:#c8c0e8}
+.notes-card-label{font-size:10px;font-weight:600;letter-spacing:0.4px;margin-bottom:4px;text-transform:uppercase}
+.notes-card--top .notes-card-label{color:#9a7d30}
+.notes-card--mid .notes-card-label{color:#4a8040}
+.notes-card--base .notes-card-label{color:#5040a0}
+.notes-card-desc{font-size:10px;color:var(--muted);font-style:italic;margin-bottom:5px;line-height:1.4;min-height:12px}
+.notes-row{display:flex;gap:4px;flex-wrap:wrap}
+.note-chip{font-size:11px;padding:3px 9px;border-radius:10px;border:0.5px solid var(--border)}
+.note-chip.top{background:#fef9ec}.note-chip.mid{background:#f0f7ee}.note-chip.base{background:#f0eefc}
+.level-section{margin:14px 0}
+.level-row{margin-bottom:10px}
+.level-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}
+.level-label span:last-child{color:var(--accent);font-weight:500;font-size:11px}
+.level-dots{display:flex;gap:4px}
+.level-dot{flex:1;height:7px;border-radius:3px;background:var(--cream);border:0.5px solid var(--border)}
+.level-dot.filled{background:var(--accent);border-color:var(--accent)}
+.level-legend{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px}
+.price-tag{display:inline-block;font-size:12px;background:var(--accent-light);color:var(--accent);padding:3px 10px;border-radius:10px;margin:8px 0}
+.season-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.season-tag{font-size:11px;padding:3px 10px;border-radius:10px;background:var(--accent-light);color:var(--accent)}
+.desc{font-size:13px;color:var(--muted);line-height:1.8;margin-top:14px;padding-top:14px;border-top:0.5px solid var(--border)}
+.quiz-section{background:var(--dark);color:var(--white);border-radius:24px;padding:56px 5%;text-align:center;max-width:1100px;margin:0 auto 80px}
+.quiz-section .section-label{color:rgba(255,255,255,0.4)}
+.quiz-section h2{font-size:28px;font-weight:600;letter-spacing:-0.5px;margin-bottom:10px}
+.quiz-section>p{color:rgba(255,255,255,0.55);margin-bottom:32px}
+.quiz-steps{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-bottom:36px}
+.step .step-num{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;margin:0 auto 6px;color:rgba(255,255,255,0.55)}
+.step p{font-size:12px;color:rgba(255,255,255,0.45)}
+.quiz-btn{background:var(--white);color:var(--dark);padding:13px 34px;border-radius:24px;font-size:14px;font-weight:500;cursor:pointer;border:none}.quiz-btn:hover{background:var(--accent-light)}
+.quiz-inline{display:none;background:var(--white);border-radius:18px;max-width:600px;margin:0 auto;padding:32px;text-align:left}
+.quiz-inline.open{display:block}
+.q-progress{height:3px;background:rgba(255,255,255,0.12);border-radius:2px;margin-bottom:26px;overflow:hidden}
+.q-bar{height:100%;background:var(--accent-light);border-radius:2px;transition:width 0.4s}
+.q-title{font-size:17px;font-weight:500;margin-bottom:18px;color:var(--dark)}
+.q-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.q-opt{padding:12px 13px;border:0.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:13px;color:var(--dark);background:var(--white);text-align:left;transition:all 0.15s;font-family:inherit}
+.q-opt:hover,.q-opt.sel{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.q-nav{display:flex;justify-content:space-between;align-items:center}
+.q-step-label{font-size:12px;color:var(--muted)}
+.q-next{background:var(--dark);color:var(--white);padding:9px 22px;border-radius:20px;border:none;font-size:13px;cursor:pointer;font-family:inherit}.q-next:disabled{opacity:0.3;cursor:default}
+.results-area{display:none;margin-top:18px}.results-area.open{display:block}
+.results-area h3{font-size:16px;font-weight:500;margin-bottom:12px;color:var(--dark)}
+.result-card{display:flex;gap:13px;align-items:center;padding:13px;border:0.5px solid var(--border);border-radius:13px;margin-bottom:9px;background:var(--cream);cursor:pointer;transition:border-color 0.15s}.result-card:hover{border-color:var(--accent)}
+.result-img{width:48px;height:48px;border-radius:9px;object-fit:cover;flex-shrink:0}
+.result-img-blank{width:48px;height:48px;border-radius:9px;flex-shrink:0;background:var(--accent-light)}
+.result-text h4{font-size:13px;font-weight:500;margin-bottom:1px}
+.result-text p{font-size:11px;color:var(--muted)}
+.result-match{font-size:11px;background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:8px;margin-top:4px;display:inline-block}
+footer{border-top:0.5px solid var(--border);padding:36px 5%;max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:12px;color:var(--muted)}
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}
+@media(max-width:700px){.hero h1{font-size:32px}.nav-links{display:none}.q-options{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}.search-input{width:100%}.notes-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">향<span>픽</span></div>
+  <div class="nav-links">
+    <a href="#discover">향수 탐색</a>
+    <a href="#quiz-section">추천 테스트</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'})">테스트 시작하기</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🇰🇷 한국 최초의 향수 플랫폼</div>
+  <h1>나만의 <em>향</em>을<br>발견하세요</h1>
+  <p>엄선된 향수 정보를 한눈에 — 향 노트, 계절, 무드별로 탐색하고 나에게 딱 맞는 향수를 찾아보세요.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'})">향수 추천 받기</button>
+    <button class="btn-secondary" onclick="document.getElementById('discover').scrollIntoView({behavior:'smooth'})">향수 탐색하기</button>
+  </div>
+  <div id="load-status" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
+</div>
+
+<section id="discover">
+  <div class="section-header">
+    <div class="section-label">향수 데이터베이스</div>
+    <h2>향수 탐색</h2>
+    <p>카테고리와 검색으로 원하는 향수를 찾아보세요</p>
+  </div>
+  <div class="toolbar">
+    <input class="search-input" id="search-input" placeholder="이름 또는 브랜드 검색..." oninput="renderGrid()">
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
+      <button class="filter-btn" onclick="setFilter('플로럴',this)">🌸 플로럴</button>
+      <button class="filter-btn" onclick="setFilter('우디',this)">🌳 우디</button>
+      <button class="filter-btn" onclick="setFilter('아쿠아틱',this)">🌊 아쿠아틱</button>
+      <button class="filter-btn" onclick="setFilter('오리엔탈',this)">✨ 오리엔탈</button>
+      <button class="filter-btn" onclick="setFilter('시트러스',this)">🍋 시트러스</button>
+      <button class="filter-btn" onclick="setFilter('머스크',this)">🤍 머스크</button>
+      <button class="filter-btn" onclick="setFilter('그린',this)">🌿 그린</button>
+    </div>
+    <span class="count-label" id="count-label"></span>
+  </div>
+  <div class="grid" id="perfume-grid">
+    <div class="skel"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line s"></div><div class="skel-line m"></div></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line s"></div><div class="skel-line m"></div></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line s"></div><div class="skel-line m"></div></div></div>
+    <div class="skel"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line s"></div><div class="skel-line m"></div></div></div>
+  </div>
+</section>
+
+<div class="quiz-section" id="quiz-section">
+  <div class="section-label">향수 추천</div>
+  <h2>나에게 맞는 향수는?</h2>
+  <p>4가지 질문으로 당신만을 위한 향수를 찾아드립니다</p>
+  <div class="quiz-steps" id="quiz-steps">
+    <div class="step"><div class="step-num">1</div><p>기분/무드</p></div>
+    <div class="step"><div class="step-num">2</div><p>선호 계열</p></div>
+    <div class="step"><div class="step-num">3</div><p>사용 상황</p></div>
+    <div class="step"><div class="step-num">4</div><p>향의 강도</p></div>
+  </div>
+  <button class="quiz-btn" id="start-quiz-btn" onclick="startQuiz()">테스트 시작하기 →</button>
+  <div class="quiz-inline" id="quiz-box">
+    <div class="q-progress"><div class="q-bar" id="q-bar"></div></div>
+    <div class="q-title" id="q-title"></div>
+    <div class="q-options" id="q-options"></div>
+    <div class="q-nav">
+      <span class="q-step-label" id="q-step-label"></span>
+      <button class="q-next" id="q-next" onclick="nextQ()" disabled>다음 →</button>
+    </div>
+    <div class="results-area" id="results-area">
+      <h3>🎯 추천 향수</h3>
+      <div id="result-list"></div>
+      <button style="margin-top:10px;background:var(--cream);border:0.5px solid var(--border);padding:8px 18px;border-radius:18px;font-size:12px;cursor:pointer;font-family:inherit" onclick="resetQuiz()">다시 테스트하기</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="font-size:16px;font-weight:600">향<span style="color:var(--accent)">픽</span></div>
+  <p>향픽은 한국 향수 커뮤니티를 위해 만들어졌습니다</p>
+  <p>© 2025 HyangPick</p>
+</footer>
+
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-img-wrap" id="modal-img-wrap">
+      <img class="modal-img" id="m-img" src="" alt="">
+    </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div><h2 id="m-name"></h2><div class="brand" id="m-brand"></div></div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="vibe-full" id="m-vibe"></div>
+      <div class="notes-grid">
+        <div class="notes-card notes-card--top">
+          <div class="notes-card-label">🌿 탑 노트</div>
+          <div class="notes-card-desc" id="m-top-desc"></div>
+          <div class="notes-row" id="m-top"></div>
+        </div>
+        <div class="notes-card notes-card--mid">
+          <div class="notes-card-label">🌸 미들 노트</div>
+          <div class="notes-card-desc" id="m-mid-desc"></div>
+          <div class="notes-row" id="m-mid"></div>
+        </div>
+        <div class="notes-card notes-card--base">
+          <div class="notes-card-label">🪵 베이스 노트</div>
+          <div class="notes-card-desc" id="m-base-desc"></div>
+          <div class="notes-row" id="m-base"></div>
+        </div>
+      </div>
+      <div class="level-section">
+        <div class="level-row">
+          <div class="level-label"><span>지속력</span><span id="m-last-label"></span></div>
+          <div class="level-dots" id="m-last-dots"></div>
+          <div class="level-legend"><span>매우 약함</span><span>극강</span></div>
+        </div>
+        <div class="level-row">
+          <div class="level-label"><span>확산력</span><span id="m-spread-label"></span></div>
+          <div class="level-dots" id="m-spread-dots"></div>
+          <div class="level-legend"><span>매우 은은함</span><span>압도적</span></div>
+        </div>
+      </div>
+      <div class="price-tag" id="m-price"></div>
+      <div class="season-tags" id="m-seasons"></div>
+      <p class="desc" id="m-desc"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCEsycB6FbqrB6YTiUMePzD0CbAmiIZsfE",
+  authDomain: "hyangpick.firebaseapp.com",
+  projectId: "hyangpick",
+  storageBucket: "hyangpick.firebasestorage.app",
+  messagingSenderId: "899969674972",
+  appId: "1:899969674972:web:a0436d03c51f67f6158e19"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const LAST_LABELS  = ['매우 약함','약함','보통','강함','매우 강함','극강'];
+const SPREAD_LABELS= ['매우 은은함','은은함','보통','뚜렷함','강한 존재감','압도적'];
+const FLAG_MAP = {'France':'🇫🇷','USA':'🇺🇸','United States':'🇺🇸','Italy':'🇮🇹','UK':'🇬🇧','United Kingdom':'🇬🇧','Germany':'🇩🇪','Spain':'🇪🇸','Japan':'🇯🇵','South Korea':'🇰🇷','Korea':'🇰🇷','Switzerland':'🇨🇭','Sweden':'🇸🇪','Lebanon':'🇱🇧','UAE':'🇦🇪'};
+
+let perfumes=[], activeFilter='all';
+
+async function initData(){
+  const st = document.getElementById('load-status');
+  st.textContent = '향수 데이터 불러오는 중...';
+  try {
+    const snap = await getDocs(collection(db, 'perfumes'));
+    perfumes = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      const notes = d.notes || {};
+      perfumes.push({
+        id:    doc.id,
+        name:  (d.name && !d.name.includes('GMT') && !d.name.includes('Standard Time'))
+          ? d.name.split('-').map((w,i)=>{
+              const small=new Set(['de','du','la','le','les','au','aux','et','by','for','the','a','an','of','in','on','and']);
+              return(i>0&&small.has(w.toLowerCase()))?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1);
+            }).join(' ')
+          : (doc.id.split('_').slice(1).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')||'Unknown'),
+        brand: d.brand || '',
+        country: d.country || '',
+        cat:   d.cat   || '기타',
+        gender: d.gender || '',
+        vibe:  d.vibe  || '',
+        notes: {
+          top:  Array.isArray(notes.top)  ? notes.top  : (notes.top||'').split(/[ ,]+/).filter(Boolean),
+          mid:  Array.isArray(notes.mid)  ? notes.mid  : (notes.mid||'').split(/[ ,]+/).filter(Boolean),
+          base: Array.isArray(notes.base) ? notes.base : (notes.base||'').split(/[ ,]+/).filter(Boolean),
+        },
+        top_desc:  d.top_desc  || '',
+        mid_desc:  d.mid_desc  || '',
+        base_desc: d.base_desc || '',
+        warm:  d.warm  || 50,
+        fresh: d.fresh || 50,
+        last:  d.last  || '보통',
+        spread:d.spread|| '보통',
+        price_range: d.price_range || '',
+        seasons: Array.isArray(d.seasons) ? d.seasons : (d.seasons||'').split(/[ ,]+/).filter(Boolean),
+        desc:  d.desc  || '',
+        img:   d.img && d.img.trim() ? d.img.trim() : '',
+      });
+    });
+    if (!perfumes.length) throw new Error('데이터 없음');
+    st.textContent = `${perfumes.length}개 향수 로드 완료 ✓`;
+    console.log('✅ Firebase 로드:', perfumes.length, '개');
+  } catch(e) {
+    console.error('Firebase 오류:', e);
+    st.textContent = '데이터를 불러오지 못했습니다.';
+    st.style.color = '#c45';
+  }
+  setTimeout(()=>st.textContent='', 2500);
+  renderGrid();
+}
+
+function getFiltered(){
+  const q = document.getElementById('search-input').value.toLowerCase();
+  return perfumes.filter(p => {
+    const mc = activeFilter==='all' || p.cat===activeFilter;
+    const mq = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+    return mc && mq;
+  });
+}
+
+window.setFilter = function(cat, btn){
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+};
+
+function renderGrid(){
+  const list = getFiltered();
+  document.getElementById('count-label').textContent = list.length + '개';
+  const g = document.getElementById('perfume-grid');
+  if (!list.length){ g.innerHTML='<div class="empty">검색 결과가 없습니다</div>'; return; }
+  g.innerHTML = list.map(p => `
+    <div class="pcard" onclick="openModal('${p.id}')">
+      <div class="pcard-img-wrap">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">` : ''}
+        <span class="pcard-tag">${p.cat}</span>
+      </div>
+      <div class="pcard-body">
+        <h3>${p.name}</h3>
+        <div class="brand">${p.brand}</div>
+        ${p.vibe?`<div class="vibe-tag">${p.vibe.split('—')[0].trim()}</div>`:''}
+        <div class="notes">${(p.notes.top||[]).slice(0,3).map(n=>`<span class="note">${n}</span>`).join('')}</div>
+        <div class="pcard-footer">
+          <span style="font-size:10px">${p.price_range ? '₩ ' + p.price_range : '—'}</span>
+          <span>${(p.seasons||[])[0]||''}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderDots(id, label, labels){
+  const idx = Math.max(0, labels.indexOf(label));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = Array.from({length:6},(_,i)=>
+    `<div class="level-dot${i<=idx?' filled':''}"></div>`).join('');
+}
+
+window.openModal = function(id){
+  const p = perfumes.find(x=>x.id===id);
+  if (!p) return;
+  const modalImgWrap = document.getElementById('modal-img-wrap');
+  const mImg = document.getElementById('m-img');
+  if (p.img) {
+    modalImgWrap.style.display = '';
+    mImg.style.display = '';
+    mImg.src = p.img;
+    mImg.onerror = function(){ this.style.display='none'; };
+  } else {
+    // Show blank accent-light banner, hide the img element
+    modalImgWrap.style.display = '';
+    mImg.style.display = 'none';
+    mImg.src = '';
+  }
+  document.getElementById('m-name').textContent = p.name;
+  const flag = p.country ? (FLAG_MAP[p.country]||'🌍')+' '+p.country : '';
+  document.getElementById('m-brand').textContent = p.brand+' · '+p.cat+(flag?' · '+flag:'');
+  document.getElementById('m-vibe').textContent = p.vibe||'';
+  document.getElementById('m-top').innerHTML  = (p.notes.top||[]).map(n=>`<span class="note-chip top">${n}</span>`).join('');
+  document.getElementById('m-mid').innerHTML  = (p.notes.mid||[]).map(n=>`<span class="note-chip mid">${n}</span>`).join('');
+  document.getElementById('m-base').innerHTML = (p.notes.base||[]).map(n=>`<span class="note-chip base">${n}</span>`).join('');
+  document.getElementById('m-top-desc').textContent  = p.top_desc||'';
+  document.getElementById('m-mid-desc').textContent  = p.mid_desc||'';
+  document.getElementById('m-base-desc').textContent = p.base_desc||'';
+  renderDots('m-last-dots',   p.last,   LAST_LABELS);
+  renderDots('m-spread-dots', p.spread, SPREAD_LABELS);
+  document.getElementById('m-last-label').textContent   = p.last||'';
+  document.getElementById('m-spread-label').textContent = p.spread||'';
+  // FIX: show actual price range value after ₩
+  document.getElementById('m-price').textContent = p.price_range ? '₩ ' + p.price_range : '';
+  document.getElementById('m-seasons').innerHTML = (p.seasons||[]).map(s=>`<span class="season-tag">${s}</span>`).join('');
+  document.getElementById('m-desc').textContent = p.desc||'';
+  document.getElementById('modal-bg').classList.add('open');
+};
+
+window.closeModal = function(e){
+  if (!e||e.target===document.getElementById('modal-bg'))
+    document.getElementById('modal-bg').classList.remove('open');
+};
+
+const quizData=[
+  {q:'지금 어떤 기분인가요?',opts:['✨ 생기 넘치고 활기차게','🌙 차분하고 조용하게','💫 로맨틱하고 감성적으로','🔥 자신감 넘치게'],key:'mood'},
+  {q:'어떤 향 계열을 선호하시나요?',opts:['🌸 꽃향기 (플로럴)','🌊 청량한 향 (아쿠아틱/시트러스)','🌿 자연적인 향 (우디/그린)','✨ 따뜻한 향 (오리엔탈/머스크)'],key:'cat'},
+  {q:'주로 어떤 상황에서 뿌릴 예정인가요?',opts:['👔 직장/비즈니스','🌿 일상/캐주얼','🌙 데이트/저녁 약속','🏖 야외/여행'],key:'occ'},
+  {q:'향의 강도는 어느 정도가 좋으신가요?',opts:['🍃 은은하고 가볍게','🌺 적당히 뚜렷하게','🔥 강하고 존재감 있게','💧 상황에 따라'],key:'int'},
+];
+let qIdx=0, answers={};
+
+window.startQuiz = function(){
+  document.getElementById('start-quiz-btn').style.display='none';
+  document.getElementById('quiz-steps').style.display='none';
+  document.querySelector('.quiz-section>p').style.display='none';
+  document.getElementById('quiz-box').classList.add('open');
+  qIdx=0; answers={}; renderQ();
+};
+
+function renderQ(){
+  const q=quizData[qIdx];
+  document.getElementById('q-bar').style.width=((qIdx+1)/quizData.length*100)+'%';
+  document.getElementById('q-title').textContent=q.q;
+  document.getElementById('q-step-label').textContent=`${qIdx+1} / ${quizData.length}`;
+  document.getElementById('q-next').textContent=qIdx===quizData.length-1?'결과 보기 →':'다음 →';
+  document.getElementById('q-next').disabled=true;
+  document.getElementById('results-area').classList.remove('open');
+  const opts=document.getElementById('q-options');
+  opts.style.display='grid';
+  opts.innerHTML=q.opts.map((o,i)=>`<button class="q-opt" onclick="selectOpt(this,${i},'${q.key}')">${o}</button>`).join('');
+}
+
+window.selectOpt = function(btn,i,key){
+  document.querySelectorAll('.q-opt').forEach(x=>x.classList.remove('sel'));
+  btn.classList.add('sel'); answers[key]=i;
+  document.getElementById('q-next').disabled=false;
+};
+
+window.nextQ = function(){ if(qIdx<quizData.length-1){qIdx++;renderQ();}else{showResults();} };
+
+function showResults(){
+  document.getElementById('q-options').style.display='none';
+  document.getElementById('q-next').style.display='none';
+  document.getElementById('q-step-label').style.display='none';
+  document.getElementById('results-area').classList.add('open');
+  const catMatch=[['플로럴'],['아쿠아틱','시트러스'],['우디','그린'],['오리엔탈','머스크']];
+  const lastScore = p => LAST_LABELS.indexOf(p.last);
+  const scored = perfumes.map(p=>{
+    let s=0;
+    if(catMatch[answers.cat||0]?.includes(p.cat)) s+=3;
+    if(answers.mood===0&&p.fresh>65) s+=2;
+    if(answers.mood===1&&p.warm<50)  s+=2;
+    if(answers.mood===2&&p.cat==='플로럴') s+=2;
+    if(answers.mood===3&&p.warm>70)  s+=2;
+    if(answers.int===0&&lastScore(p)<2) s+=1;
+    if(answers.int===2&&lastScore(p)>3) s+=1;
+    s+=Math.random()*0.5;
+    return{...p,score:s};
+  }).sort((a,b)=>b.score-a.score).slice(0,3);
+
+  // FIX: only show assigned image; blank box otherwise (no category fallbacks)
+  document.getElementById('result-list').innerHTML=scored.map((p,i)=>`
+    <div class="result-card" onclick="openModal('${p.id}')">
+      ${p.img
+        ? `<img class="result-img" src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=\\'result-img-blank\\'></div>'">`
+        : `<div class="result-img-blank"></div>`
+      }
+      <div class="result-text">
+        <h4>${p.name}</h4>
+        <p>${p.brand} · ${p.cat}</p>
+        <span class="result-match">${i===0?'최고 매칭':'추천'}</span>
+      </div>
+    </div>`).join('');
+}
+
+window.resetQuiz = function(){
+  qIdx=0; answers={};
+  document.getElementById('q-next').style.display='';
+  document.getElementById('q-step-label').style.display='';
+  renderQ();
+};
+
+initData();
+</script>
+</body>
+</html>
